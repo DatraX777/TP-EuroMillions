@@ -4,6 +4,7 @@ from fastapi import FastAPI, Header
 from pydantic import BaseModel
 
 
+
 class Tirage(BaseModel):
     N1 : int
     N2 : int
@@ -12,6 +13,12 @@ class Tirage(BaseModel):
     N5 : int
     E1 : int
     E2 : int
+
+class Model(BaseModel):
+    Metrics: List[float]
+    name : str
+    trainMetrics : List[float]
+
 
 app = FastAPI()
 
@@ -33,12 +40,16 @@ class Item(BaseModel):
     tax : Optional[float] = None
 
 @app.post("/api/predict/{tirage}")
-async def est_gagnant(tirage: Tirage):
+async def est_gagnant(tirage: Tirage) -> str:
     _res : float
 
     return ("Proba gain : " + _res + "%, Proba perte : " + 1-_res)
 
 @app.get("/api/predict/")
-async def est_peut_etre_gagnant():
+async def est_peut_etre_gagnant() -> Tirage:
     tirage : Tirage
     return ("Ce tirage à de forte chance d'être gagnant :" + tirage)
+
+@app.get("api/model/")
+async def model_spec() -> Model:
+    
