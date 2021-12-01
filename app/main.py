@@ -22,27 +22,10 @@ class Model(BaseModel):
 
 app = FastAPI()
 
-
-
-@app.get("/models/{model_name}")
-async def get_model(model_name: ModelName):
-    if model_name == ModelName.alexnet:
-        return {"model_name" : model_name, "message" : "deep Learning FTW!"}
-    if model_name.value == "lenet":
-        return {"model_name" : model_name , "message" : "LeCNN all the images"}
-    return{"model_name" : model_name , "message" : "Have some residuals"}
-
-
-class Item(BaseModel):
-    name : str
-    description: Optional[str] = None
-    price : float
-    tax : Optional[float] = None
-
-@app.post("/api/predict/{tirage}")
+@app.post("/api/predict/")
 async def est_gagnant(tirage: Tirage) -> str:
     _res : float
-
+    numbers : Tirage = tirage
     return ("Proba gain : " + _res + "%, Proba perte : " + 1-_res)
 
 @app.get("/api/predict/")
@@ -52,4 +35,4 @@ async def est_peut_etre_gagnant() -> Tirage:
 
 @app.get("api/model/")
 async def model_spec() -> Model:
-    
+    return ("these are the model specs")
