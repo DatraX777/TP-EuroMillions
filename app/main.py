@@ -30,9 +30,10 @@ async def est_gagnant(tirage: Tirage) -> str:
 
 @app.get("/api/predict/")
 async def est_peut_etre_gagnant() -> Tirage:
-    tirage : Tirage
+    tirage : Tirage = [random.range(1,51),]
     return ("Ce tirage à de forte chance d'être gagnant :" + tirage)
 
 @app.get("api/model/")
 async def model_spec() -> Model:
     return ("these are the model specs")
+
