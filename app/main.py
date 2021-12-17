@@ -1,7 +1,9 @@
 from enum import Enum
 from typing import Optional , List
+from typing_extensions import Required
 from fastapi import FastAPI, Header
 from pydantic import BaseModel
+import random
 
 
 
@@ -19,6 +21,12 @@ class Model(BaseModel):
     name : str
     trainMetrics : List[float]
 
+class Entry(BaseModel):
+    date: str
+    tirage : Tirage
+    win : int 
+    gain : int
+
 
 app = FastAPI()
 
@@ -30,10 +38,12 @@ async def est_gagnant(tirage: Tirage) -> str:
 
 @app.get("/api/predict/")
 async def est_peut_etre_gagnant() -> Tirage:
-    tirage : Tirage = [random.range(1,51),]
-    return ("Ce tirage à de forte chance d'être gagnant :" + tirage)
+    tirage : Tirage = [random.randint(1,51),random.randint(1,51),random.randint(1,51),random.randint(1,51),random.randint(1,51),random.randint(1,12),random.randint(1,12)]
+    return ("Ce tirage à de forte chance d'être gagnant : " + ''.join(str(e) + ' ' for e in tirage))
 
 @app.get("api/model/")
 async def model_spec() -> Model:
     return ("these are the model specs")
 
+# @app.put("/api/model/")
+# async def add_entry(item : Entry):
