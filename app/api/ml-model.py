@@ -3,11 +3,13 @@ from numpy.core.defchararray import split
 from numpy.core.fromnumeric import reshape, shape
 from numpy.core.numeric import tensordot
 import pandas as pd
-from datetime import date , timedelta, datetime
-import random
+from pandas.core.algorithms import mode
 from sklearn import metrics
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
+from datetime import date , timedelta, datetime
+import random
+from joblib import dump, load
 
 def import_data(path):
     """importe les données
@@ -54,7 +56,7 @@ def writing_dataset(win_set, loose_set):
     frames = [win_set, loose_set]
     result = pd.concat(frames,ignore_index=True)
     result.to_csv("app/databases/dataset.csv",index=False)
-    return 0 
+    return None
 
 def train_random_forest(path):
     """entraine le modèle random forest à partir d'un fichier csv
@@ -82,17 +84,19 @@ def train_random_forest(path):
 
 def save_model(model):
     """sauvegarde le modèle"""
-    joblib.dump(model, "app/databases/model_saved.joblib")
+    dump(model, "app/databases/model_saved.joblib")
     return None
 
 def get_model():
     """charge le modèle"""
-    return joblib.load("app/databases/model_saved.joblib")
+    return load("app/databases/model_saved.joblib")
 
 def prediction(x,trf):
     """donne la classe prédite pour x celon le modèle donné
     input: x donnée à prédire, trf modèle de prédiction
     output: classe prédite, probabilités"""
+    temporaire = date.today() - date(*map(int, x[0].split('-')))
+    x[0]= temporaire.days
     return trf.predict([x]), trf.predict_proba([x])
 
 def add_row_to_dataset(new_data):
@@ -105,12 +109,12 @@ def check_data_format(x):
     if 0<x[1]<51 and 0<x[2]<51 and 0<x[3]<51 and 0<x[4]<51 and 0<x[5]<51 and 0<x[6]<13 and 0<x[7]<13:
         return True
     else :
-        return False 
+        return False
 
 def generate_random_data():
     """génère une donnée aléatoire à la date d'aujourd'hui"""
     random_data = []
-    random_data.append(date.today())
+    random_data.append(datetime.today().strftime('%Y-%m-%d'))
     random_data.extend(np.random.choice(range(1,50), 5, replace=False))
     random_data.extend(np.random.choice(range(1,12), 2, replace=False))
     return random_data
@@ -118,19 +122,20 @@ def generate_random_data():
 def find_good_pick(model, n = 1000):
     """trouve un tirage avec une forte probabilité de gain
     input: model modèle utilisé, n nombre d'itération max
-    output: x au format ["Date","N1","N2","N3","N4","N5","E1","E2"]"""
+    output: x au format ["Date","N1","N2","N3","N4","N5","E1","E2"]
+    nota bene: la sortie "Date" indique le nombre de jour d'écart avec la date actuelle, soit 0 car tout les nouveau tirages sont prit pour aujourd'hui"""
     best_x = []
-    best_b = []
+    best_b = [[0,0]]
     for i in range(n):
         x = generate_random_data()
         a, b = prediction(x, model)
-        if b[1]>=0.2:
-            return x
+        if b[0][1]>=0.7:
+            return x, b
         else:
-            if b[1]>best_b[1]:
+            if b[0][1]>best_b[0][1]:
                 best_x = x
                 best_b = b
-    return best_x
+    return best_x, best_b
 
 path = 'app/databases/EuroMillions_numbers.csv'
 data = import_data(path)
@@ -150,3 +155,9 @@ x = [[26,12,13,14,15,16,2,3]]
 a, b = prediction(x,trained_random_forest)
 print(a)
 print(b)
+# save_model(trained_random_forest)
+
+model_saved = get_model()
+a1,b1 = find_good_pick(model_saved)
+print(a1)
+print(b1)
