@@ -1,0 +1,7 @@
+Bienvenue dans notre projet Fast API sur l'EuroMillion.
+
+-Pour commencer il faut télécharger les fichiers depuis git.
+-Il faut ensuite créer un environement python
+-Il faut ensuite exécuter le fichier init.py afin de générer les fichier utils au bon fonctionnement de l'api.
+-Il faut ensuite créer le serveur avec la commande suivante: uvicorn main:app --reload
+-Ensuite ouvrir un navigateur internet et se rendre sur : http://127.0.0.1/docs

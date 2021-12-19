@@ -5,6 +5,7 @@ from fastapi import FastAPI, Header
 from pydantic import BaseModel
 import random
 from  api.mlModel import * 
+import ast
 
 
 
@@ -48,7 +49,8 @@ async def est_peut_etre_gagnant() -> Tirage:
 
 @app.get("api/model/")
 async def model_spec() -> Model:
-    return ("these are the model specs")
+    specs :dict = loads_model_metrics()
+    return ("these are the model specs:\n"+ ast.literal_eval(str(specs)))
 
 
 @app.put("/api/model/")
