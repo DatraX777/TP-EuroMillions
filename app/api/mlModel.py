@@ -4,6 +4,7 @@ from numpy.core.fromnumeric import reshape, shape
 from numpy.core.numeric import tensordot
 import pandas as pd
 from pandas.core.algorithms import mode
+from pandas.core.frame import DataFrame
 from sklearn import metrics
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -76,10 +77,23 @@ def train_random_forest(path):
     X.insert(0,"Date diff",datedata2)
     y = data["win"]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
-
     rfc.fit(X_train,y_train)
+
+    # crée un fichier avec les metrics du modèle et les paramètres utilisés
     y_pred = rfc.predict(X_test)
-    print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+    model_name = "random forest classifier"
+    number_of_trees=100
+    max_depth="None"
+    class_weight="None"
+    accuracy = metrics.accuracy_score(y_test, y_pred)
+    balanced_accuracy = metrics.balanced_accuracy_score(y_test, y_pred)
+    f1 = metrics.f1_score(y_test, y_pred)
+    precision = metrics.precision_score(y_test, y_pred)
+    recall = metrics.recall_score(y_test, y_pred)
+    index=["model_name","number_of_trees","max_depth","class_weight","accuracy","balanced_accuracy","f1","precision","recall"]
+    d = [model_name,number_of_trees,max_depth,class_weight,accuracy,balanced_accuracy,f1,precision,recall]
+    df = DataFrame(d,index=index, columns=["metrics et parametres"])
+    df.to_csv("app/databases/model_metrics.csv",index= True)
     return rfc
 
 def save_model(model):
@@ -137,6 +151,10 @@ def find_good_pick(model, n = 1000):
                 best_b = b
     return best_x, best_b
 
+def loads_model_metrics():
+    model_metrics = pd.read_csv("app/databases/model_metrics.csv",delimiter=",",index_col=0)
+    return model_metrics.to_dict()
+
 path = 'app/databases/EuroMillions_numbers.csv'
 data = import_data(path)
 
@@ -161,3 +179,5 @@ model_saved = get_model()
 a1,b1 = find_good_pick(model_saved)
 print(a1)
 print(b1)
+
+toto = loads_model_metrics()
