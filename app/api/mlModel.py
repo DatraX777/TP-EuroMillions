@@ -155,29 +155,11 @@ def loads_model_metrics():
     model_metrics = pd.read_csv("app/databases/model_metrics.csv",delimiter=",",index_col=0)
     return model_metrics.to_dict()
 
-path = 'app/databases/EuroMillions_numbers.csv'
-data = import_data(path)
-
-print(data)
-
-data_size = data.shape[0]
-print(data_size)
-
-loosers = create_loosing_data(data_size,4)
-print(loosers)
-
-writing_dataset(data,loosers)
-
-trained_random_forest = train_random_forest("app/databases/dataset.csv")
-x = [[26,12,13,14,15,16,2,3]]
-a, b = prediction(x,trained_random_forest)
-print(a)
-print(b)
-# save_model(trained_random_forest)
-
-model_saved = get_model()
-a1,b1 = find_good_pick(model_saved)
-print(a1)
-print(b1)
-
-toto = loads_model_metrics()
+def init():
+    path='app/databases/EuroMillions_numbers.csv'
+    data = import_data(path)
+    data_size = data.shape[0]
+    loosers = create_loosing_data(data_size,4)
+    writing_dataset(data,loosers)
+    trained_random_forest = train_random_forest("app/databases/dataset.csv")
+    save_model(trained_random_forest)
