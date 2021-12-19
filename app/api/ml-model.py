@@ -80,6 +80,15 @@ def train_random_forest(path):
     print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
     return rfc
 
+def save_model(model):
+    """sauvegarde le modèle"""
+    joblib.dump(model, "app/databases/model_saved.joblib")
+    return None
+
+def get_model():
+    """charge le modèle"""
+    return joblib.load("app/databases/model_saved.joblib")
+
 def prediction(x,trf):
     """donne la classe prédite pour x celon le modèle donné
     input: x donnée à prédire, trf modèle de prédiction
@@ -98,6 +107,30 @@ def check_data_format(x):
     else :
         return False 
 
+def generate_random_data():
+    """génère une donnée aléatoire à la date d'aujourd'hui"""
+    random_data = []
+    random_data.append(date.today())
+    random_data.extend(np.random.choice(range(1,50), 5, replace=False))
+    random_data.extend(np.random.choice(range(1,12), 2, replace=False))
+    return random_data
+
+def find_good_pick(model, n = 1000):
+    """trouve un tirage avec une forte probabilité de gain
+    input: model modèle utilisé, n nombre d'itération max
+    output: x au format ["Date","N1","N2","N3","N4","N5","E1","E2"]"""
+    best_x = []
+    best_b = []
+    for i in range(n):
+        x = generate_random_data()
+        a, b = prediction(x, model)
+        if b[1]>=0.2:
+            return x
+        else:
+            if b[1]>best_b[1]:
+                best_x = x
+                best_b = b
+    return best_x
 
 path = 'app/databases/EuroMillions_numbers.csv'
 data = import_data(path)
