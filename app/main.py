@@ -4,10 +4,13 @@ from typing_extensions import Required
 from fastapi import FastAPI, Header
 from pydantic import BaseModel
 import random
+from  api.mlModel import * 
+
 
 
 
 class Tirage(BaseModel):
+    date : str
     N1 : int
     N2 : int
     N3 : int
@@ -32,18 +35,23 @@ app = FastAPI()
 
 @app.post("/api/predict/")
 async def est_gagnant(tirage: Tirage) -> str:
-    _res : float
+    model = get_model()
     numbers : Tirage = tirage
-    return ("Proba gain : " + _res + "%, Proba perte : " + 1-_res)
+    a,b = prediction(numbers,model)
+    return ("Proba gain : " + b[0] + "%, Proba perte : " + b[1])
 
 @app.get("/api/predict/")
 async def est_peut_etre_gagnant() -> Tirage:
-    tirage : Tirage = [random.randint(1,51),random.randint(1,51),random.randint(1,51),random.randint(1,51),random.randint(1,51),random.randint(1,12),random.randint(1,12)]
+    model = get_model()
+    tirage : Tirage = find_good_pick(model)
     return ("Ce tirage à de forte chance d'être gagnant : " + ''.join(str(e) + ' ' for e in tirage))
 
 @app.get("api/model/")
 async def model_spec() -> Model:
     return ("these are the model specs")
 
-# @app.put("/api/model/")
-# async def add_entry(item : Entry):
+
+@app.put("/api/model/")
+async def add_entry(item : Entry):
+    add_row_to_dataset(item)
+    return("La données viens d'être ajouter au model")
