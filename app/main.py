@@ -47,7 +47,7 @@ async def est_peut_etre_gagnant() -> Tirage:
     return ("Ce tirage à de forte chance d'être gagnant : " + ''.join(str(e) + ' ' for e in tirage))
 
 @app.get("api/model/")
-async def model_spec() -> Model:
+async def loads_model_metrics() -> Model:
     return ("these are the model specs")
 
 
