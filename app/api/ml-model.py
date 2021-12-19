@@ -3,9 +3,11 @@ from numpy.core.defchararray import split
 from numpy.core.fromnumeric import reshape, shape
 from numpy.core.numeric import tensordot
 import pandas as pd
-import sklearn as sk
 from datetime import date , timedelta, datetime
 import random
+from sklearn import metrics
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
 
 def import_data(path):
     """importe les données
@@ -78,6 +80,25 @@ def train_random_forest(path):
     print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
     return rfc
 
+def prediction(x,trf):
+    """donne la classe prédite pour x celon le modèle donné
+    input: x donnée à prédire, trf modèle de prédiction
+    output: classe prédite, probabilités"""
+    return trf.predict([x]), trf.predict_proba([x])
+
+def add_row_to_dataset(new_data):
+    """ajoute une donnée au dataset"""
+    new_data.to_csv("app/databases/dataset.csv",index=False, header = False, mode = 'a')
+    return None
+
+def check_data_format(x):
+    """vérifie le format de donnée"""
+    if 0<x[1]<51 and 0<x[2]<51 and 0<x[3]<51 and 0<x[4]<51 and 0<x[5]<51 and 0<x[6]<13 and 0<x[7]<13:
+        return True
+    else :
+        return False 
+
+
 path = 'app/databases/EuroMillions_numbers.csv'
 data = import_data(path)
 
@@ -93,5 +114,6 @@ writing_dataset(data,loosers)
 
 trained_random_forest = train_random_forest("app/databases/dataset.csv")
 x = [[26,12,13,14,15,16,2,3]]
-print(x)
-print(trained_random_forest.predict(x))
+a, b = prediction(x,trained_random_forest)
+print(a)
+print(b)
