@@ -34,6 +34,11 @@ class Entry(BaseModel):
 
 app = FastAPI()
 
+@app.get("/api/model")
+async def initialiser():
+    init()
+    return ("Le modèles viens d'être générer")
+
 @app.post("/api/predict/")
 async def est_gagnant(tirage: Tirage) -> str:
     model = get_model()
