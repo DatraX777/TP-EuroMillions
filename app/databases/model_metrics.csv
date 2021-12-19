@@ -1,0 +1,10 @@
+,metrics et parametres
+model_name,random forest classifier
+number_of_trees,100
+max_depth,None
+class_weight,None
+accuracy,0.8614061709661103
+balanced_accuracy,0.6547925503388425
+f1,0.471042471042471
+precision,0.9312977099236641
+recall,0.3152454780361757

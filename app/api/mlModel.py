@@ -56,10 +56,10 @@ def writing_dataset(win_set, loose_set):
     output: None"""
     frames = [win_set, loose_set]
     result = pd.concat(frames,ignore_index=True)
-    result.to_csv("app/databases/dataset.csv",index=False)
+    result.to_csv("./databases/dataset.csv",index=False)
     return None
 
-def train_random_forest(path="app/databases/dataset.csv"):
+def train_random_forest(path="./databases/dataset.csv"):
     """entraine le modèle random forest à partir d'un fichier csv
     input: path chemin vers le csv
     output: rfc le modèle"""
@@ -93,17 +93,17 @@ def train_random_forest(path="app/databases/dataset.csv"):
     index=["model_name","number_of_trees","max_depth","class_weight","accuracy","balanced_accuracy","f1","precision","recall"]
     d = [model_name,number_of_trees,max_depth,class_weight,accuracy,balanced_accuracy,f1,precision,recall]
     df = DataFrame(d,index=index, columns=["metrics et parametres"])
-    df.to_csv("app/databases/model_metrics.csv",index= True)
+    df.to_csv("./databases/model_metrics.csv",index= True)
     return rfc
 
 def save_model(model):
     """sauvegarde le modèle"""
-    dump(model, "app/databases/model_saved.joblib")
+    dump(model, "./databases/model_saved.joblib")
     return None
 
 def get_model():
     """charge le modèle"""
-    return load("app/databases/model_saved.joblib")
+    return load("./databases/model_saved.joblib")
 
 def prediction(x,trf):
     """donne la classe prédite pour x celon le modèle donné
@@ -115,7 +115,7 @@ def prediction(x,trf):
 
 def add_row_to_dataset(new_data):
     """ajoute une donnée au dataset"""
-    new_data.to_csv("app/databases/dataset.csv",index=False, header = False, mode = 'a')
+    new_data.to_csv("./databases/dataset.csv",index=False, header = False, mode = 'a')
     return None
 
 def check_data_format(x):
@@ -152,14 +152,14 @@ def find_good_pick(model, n = 1000):
     return best_x, best_b
 
 def loads_model_metrics():
-    model_metrics = pd.read_csv("app/databases/model_metrics.csv",delimiter=",",index_col=0)
+    model_metrics = pd.read_csv("./databases/model_metrics.csv",delimiter=",",index_col=0)
     return model_metrics.to_dict()
 
 def init():
-    path='app/databases/EuroMillions_numbers.csv'
+    path='./databases/EuroMillions_numbers.csv'
     data = import_data(path)
     data_size = data.shape[0]
     loosers = create_loosing_data(data_size,4)
     writing_dataset(data,loosers)
-    trained_random_forest = train_random_forest("app/databases/dataset.csv")
+    trained_random_forest = train_random_forest("./databases/dataset.csv")
     save_model(trained_random_forest)
