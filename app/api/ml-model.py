@@ -54,12 +54,44 @@ def writing_dataset(win_set, loose_set):
     result.to_csv("app/databases/dataset.csv",index=False)
     return 0 
 
+def train_random_forest(path):
+    """entraine le modèle random forest à partir d'un fichier csv
+    input: path chemin vers le csv
+    output: rfc le modèle"""
+    data = pd.read_csv(path,delimiter=",")
+    # convertit les dates en nombre de jour de différence avec la date actuelle
+    datedata = data["Date"]
+    today = date.today()
+    datedata2 = []
+    for i in range(len(datedata)):
+        deltaday = today - date(*map(int, datedata[i].split('-')))
+        datedata2.append(deltaday.days)
+    # création et entrainement du modèle
+    rfc = RandomForestClassifier()
+    X = data[["N1","N2","N3","N4","N5","E1","E2"]]
+    X.insert(0,"Date diff",datedata2)
+    y = data["win"]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+    rfc.fit(X_train,y_train)
+    y_pred = rfc.predict(X_test)
+    print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+    return rfc
+
 path = 'app/databases/EuroMillions_numbers.csv'
 data = import_data(path)
 
 print(data)
+
 data_size = data.shape[0]
 print(data_size)
+
 loosers = create_loosing_data(data_size,4)
 print(loosers)
-a = writing_dataset(data,loosers)
+
+writing_dataset(data,loosers)
+
+trained_random_forest = train_random_forest("app/databases/dataset.csv")
+x = [[26,12,13,14,15,16,2,3]]
+print(x)
+print(trained_random_forest.predict(x))
