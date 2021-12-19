@@ -59,7 +59,7 @@ def writing_dataset(win_set, loose_set):
     result.to_csv("app/databases/dataset.csv",index=False)
     return None
 
-def train_random_forest(path):
+def train_random_forest(path="app/databases/dataset.csv"):
     """entraine le modèle random forest à partir d'un fichier csv
     input: path chemin vers le csv
     output: rfc le modèle"""

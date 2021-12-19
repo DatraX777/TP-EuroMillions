@@ -38,7 +38,7 @@ async def est_gagnant(tirage: Tirage) -> str:
     model = get_model()
     numbers : Tirage = tirage
     a,b = prediction(numbers,model)
-    return ("Proba gain : " + b[0] + "%, Proba perte : " + b[1])
+    return ("Proba gain : " + b[1] + "%, Proba perte : " + b[0])
 
 @app.get("/api/predict/")
 async def est_peut_etre_gagnant() -> Tirage:
@@ -53,5 +53,15 @@ async def model_spec() -> Model:
 
 @app.put("/api/model/")
 async def add_entry(item : Entry):
-    add_row_to_dataset(item)
-    return("La données viens d'être ajouter au model")
+    if check_data_format(item):
+        add_row_to_dataset(item)
+        return("La données viens d'être ajouter au model")
+    else:
+        return("erreur, mauvais format de donnée")
+
+@app.post("/api/model/retrain/")
+async def retrain_model() -> dict:
+    model = train_random_forest()
+    save_model(model)
+    a = loads_model_metrics()
+    return (a)
