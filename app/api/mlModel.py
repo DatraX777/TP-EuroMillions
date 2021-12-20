@@ -5,6 +5,7 @@ from numpy.core.numeric import tensordot
 import pandas as pd
 from pandas.core.algorithms import mode
 from pandas.core.frame import DataFrame
+from pandas.core.series import Series
 import sklearn
 from sklearn import metrics
 from sklearn.ensemble import RandomForestClassifier
@@ -117,12 +118,16 @@ def prediction(x,trf):
 
 def add_row_to_dataset(new_data):
     """ajoute une donnée au dataset"""
-    new_data.to_csv("databases/dataset.csv",index=False, header = False, mode = 'a')
+    print(new_data)
+    column = ["Date","N1","N2","N3","N4","N5","E1","E2","win"]
+    df = DataFrame([new_data], columns=column)
+    print(df)
+    df.to_csv("databases/dataset.csv",index=False, header = False, mode = 'a')
     return None
 
 def check_data_format(x):
     """vérifie le format de donnée"""
-    if 0<x[1]<51 and 0<x[2]<51 and 0<x[3]<51 and 0<x[4]<51 and 0<x[5]<51 and 0<x[6]<13 and 0<x[7]<13:
+    if 0<x[1]<51 and 0<x[2]<51 and 0<x[3]<51 and 0<x[4]<51 and 0<x[5]<51 and 0<x[6]<13 and 0<x[7]<13 and (x[8]==0 or x[8]==1):
         return True
     else :
         return False

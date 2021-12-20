@@ -12,6 +12,7 @@ import datetime
 
 
 class Tirage(BaseModel):
+    date : str
     N1 : int
     N2 : int
     N3 : int
@@ -26,10 +27,8 @@ class Model(BaseModel):
     trainMetrics : List[float]
 
 class Entry(BaseModel):
-    date: str
     tirage : Tirage
     win : int 
-    gain : int
 
 
 app = FastAPI()
@@ -55,18 +54,20 @@ async def est_peut_etre_gagnant():
 
 @app.get("/api/model/")
 async def model_spec():
-    print("tata")
     specs :dict = loads_model_metrics()
-    print("toto")
     return (specs)
 
 
 @app.put("/api/model/")
 async def add_entry(item : Entry):
-    if check_data_format(item):
-        add_row_to_dataset(item)
-        return("La données viens d'être ajouter au model")
+    new_tirage = Entry_to_list(item)
+    if check_data_format(new_tirage):
+        print("accepté")
+        print(new_tirage)
+        add_row_to_dataset(new_tirage)
+        return("La donnée vient d'être ajoutée au modèle")
     else:
+        print("refusé")
         return("erreur, mauvais format de donnée")
 
 @app.post("/api/model/retrain/")
@@ -78,3 +79,7 @@ async def retrain_model():
 def Tirage_to_list(tirage):
     listTirage = [tirage.date, tirage.N1, tirage.N2, tirage.N3, tirage.N4, tirage.N5, tirage.E1, tirage.E2]
     return(listTirage)
+
+def Entry_to_list(entry):
+    listEntry = Tirage_to_list(entry.tirage)+[entry.win]
+    return(listEntry)
