@@ -5,13 +5,13 @@ from fastapi import FastAPI, Header
 from pydantic import BaseModel
 import random
 from  api.mlModel import * 
-import ast
+import pickle
+import datetime
 
 
 
 
 class Tirage(BaseModel):
-    date : str
     N1 : int
     N2 : int
     N3 : int
@@ -33,6 +33,11 @@ class Entry(BaseModel):
 
 
 app = FastAPI()
+
+@app.get("/api/model")
+async def initialiser():
+    init()
+    return ("Le modèles viens d'être générer")
 
 @app.post("/api/predict/")
 async def est_gagnant(tirage: Tirage):

@@ -57,7 +57,7 @@ def writing_dataset(win_set, loose_set):
     output: None"""
     frames = [win_set, loose_set]
     result = pd.concat(frames,ignore_index=True)
-    result.to_csv("app/databases/dataset.csv",index=False)
+    result.to_csv("./databases/dataset.csv",index=False)
     return None
 
 def train_random_forest(path="databases/dataset.csv"):
