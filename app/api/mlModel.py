@@ -151,7 +151,7 @@ def find_good_pick(model, n = 1000):
     for i in range(n):
         x = generate_random_data()
         a, b = prediction(x, model)
-        if b[0][1]>=0.2:
+        if b[0][1]>=0.5:
             return x, b
         else:
             if b[0][1]>best_b[0][1]:
