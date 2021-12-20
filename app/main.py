@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Optional , List
-from typing_extensions import Required
+# from typing_extensions import Required
 from fastapi import FastAPI, Header
 from pydantic import BaseModel
 import random
@@ -35,27 +35,25 @@ class Entry(BaseModel):
 app = FastAPI()
 
 @app.post("/api/predict/")
-async def est_gagnant(tirage: Tirage) -> str:
+async def est_gagnant(tirage: Tirage):
     model = get_model()
-    numbers : Tirage = tirage
+    numbers = Tirage_to_list(tirage)
     a,b = prediction(numbers,model)
-    return ("Proba gain : " + b[1] + "%, Proba perte : " + b[0])
+    return ("Proba gain : " + str(b[0][1]) + "%, Proba perte : " + str(b[0][0]))
 
 @app.get("/api/predict/")
-async def est_peut_etre_gagnant() -> Tirage:
+async def est_peut_etre_gagnant():
     model = get_model()
-    tirage : Tirage = find_good_pick(model)
-    return ("Ce tirage à de forte chance d'être gagnant : " + ''.join(str(e) + ' ' for e in tirage))
+    tirage, proba_win = find_good_pick(model)
+    #print(tirage)
+    return {"Ce tirage à de forte chance d'être gagnant ": str(tirage), "proba win": proba_win[0][1]}
 
-@app.get("api/model/")
-<<<<<<< HEAD
-async def loads_model_metrics() -> Model:
-    return ("these are the model specs")
-=======
-async def model_spec() -> Model:
+@app.get("/api/model/")
+async def model_spec():
+    print("tata")
     specs :dict = loads_model_metrics()
-    return ("these are the model specs:\n"+ ast.literal_eval(str(specs)))
->>>>>>> 827db6d6cd314e01439d57f16f835bbd226d1091
+    print("toto")
+    return (specs)
 
 
 @app.put("/api/model/")
@@ -67,8 +65,11 @@ async def add_entry(item : Entry):
         return("erreur, mauvais format de donnée")
 
 @app.post("/api/model/retrain/")
-async def retrain_model() -> dict:
+async def retrain_model():
     model = train_random_forest()
     save_model(model)
-    a = loads_model_metrics()
-    return (a)
+    return ("model successfully retrained")
+
+def Tirage_to_list(tirage):
+    listTirage = [tirage.date, tirage.N1, tirage.N2, tirage.N3, tirage.N4, tirage.N5, tirage.E1, tirage.E2]
+    return(listTirage)
